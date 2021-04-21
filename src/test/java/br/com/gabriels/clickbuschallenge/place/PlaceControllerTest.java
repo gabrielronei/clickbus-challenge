@@ -31,11 +31,11 @@ class PlaceControllerTest {
     private PlaceRepository placeRepository;
 
     @Property(tries = 100)
-    void save__should_return_error_if_the_request_has_valid_conditions(@ForAll @AlphaChars @StringLength(min = 1, max = 200) String name,
+    void save__should_return_created_if_the_request_has_valid_conditions(@ForAll @AlphaChars @StringLength(min = 1, max = 200) String name,
                                                                        @ForAll @AlphaChars @StringLength(min = 1, max = 200) String slug,
                                                                        @ForAll @AlphaChars @StringLength(min = 1, max = 200) String city,
                                                                        @ForAll @AlphaChars @StringLength(min = 1, max = 200) String state,
-                                                                       @ForAll("datesBetween1900and2099") @StringLength(value = 10) String creationDate) throws Exception {
+                                                                       @ForAll("datesBetween2000andLastYear") @StringLength(value = 10) String creationDate) throws Exception {
 
         String string = new ObjectMapper().writeValueAsString(Map.of("name", name, "slug", slug, "city", city,
                 "state", state, "createdAt", creationDate));
@@ -57,8 +57,6 @@ class PlaceControllerTest {
                 .inTheCity(city)
                 .createdAt(creationDate)
                 .asJson();
-
-        System.out.println(jsonPlace);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/places")
@@ -115,7 +113,7 @@ class PlaceControllerTest {
                                                            @ForAll @AlphaChars @StringLength(min = 1, max = 200) String slug,
                                                            @ForAll @AlphaChars @StringLength(min = 1, max = 200) String city,
                                                            @ForAll @AlphaChars @StringLength(min = 1, max = 200) String state,
-                                                           @ForAll("datesBetween1900and2099") @StringLength(value = 10) String creationDate) throws Exception {
+                                                           @ForAll("datesBetween2000andLastYear") @StringLength(value = 10) String creationDate) throws Exception {
         Place place = placeRepository.save(new Place("Calabouço do android", "CDA", "Illinois", "Springfield",
                 LocalDate.now().minusYears(2)));
 
@@ -142,7 +140,7 @@ class PlaceControllerTest {
     }
 
     @Provide
-    Arbitrary<String> datesBetween1900and2099() {
+    Arbitrary<String> datesBetween2000andLastYear() {
         LocalDate now = LocalDate.now();
         Arbitrary<Integer> years = Arbitraries.integers().between(2000, now.getYear() - 1);
         Arbitrary<Integer> months = Arbitraries.integers().between(1, 12);
